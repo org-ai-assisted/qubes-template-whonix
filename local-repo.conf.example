@@ -17,9 +17,10 @@
 ## Trust: a local repo of freshly-built, unsigned packages uses "Trusted: yes" (apt skips
 ## signature verification for THIS repo only). Keep it confined to local testing; never ship it.
 ##
-## Suites: must match the local repository's own codename (derivative-maker's local reprepro
-## store under /srv/derivative-maker/aptrepo_local/<derivative> uses the plain release codename,
-## e.g. "trixie", not "trixie-testers").
+## Suites / Components: must match the local repository's own codename and layout. derivative-
+## maker's local reprepro store under /srv/derivative-maker/aptrepo_local/<derivative> publishes
+## under the FIXED codename "local" (not a Debian suite like "trixie"), components
+## "main contrib non-free" -- same as dm's own add-local-test-repo.
 ##
 ## Both blocks are commented out by default. Uncomment ONLY the block for the repository you are
 ## testing locally, so the other keeps pulling from the remote. (The build driver,
@@ -29,14 +30,14 @@
 
 #kicksecure_repository_sources="Types: deb
 #URIs: file:///mnt-local-repo/kicksecure
-#Suites: trixie
-#Components: main
+#Suites: local
+#Components: main contrib non-free
 #Enabled: yes
 #Trusted: yes"
 
 #whonix_repository_sources="Types: deb
 #URIs: file:///mnt-local-repo/whonix
-#Suites: trixie
-#Components: main
+#Suites: local
+#Components: main contrib non-free
 #Enabled: yes
 #Trusted: yes"
