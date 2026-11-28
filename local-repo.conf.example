@@ -8,10 +8,11 @@
 ## Only this .example is committed. The real local-repo.conf is NOT committed; the build driver
 ## (dm-qubes-template-build --local-repo) writes it, or copy this file to local-repo.conf by hand.
 ##
-## Reachability (docker executor): the build runs in a container on the default docker bridge,
-## which reaches the host only at the bridge gateway 172.17.0.1 -- NOT 127.0.0.1 -- and host
-## paths are not bind-mounted into the cage, so a "file:" URI does not work under docker. Serve
-## the local repo over http on the host (bound to 172.17.0.1) and point URIs at it.
+## Transport (docker executor): the build's apt runs CHROOTED into the template rootfs, so a
+## file:// URI resolves inside the chroot, not against host or cage paths. The build driver stages
+## the repo next to this file (FLAVORS_DIR/aptrepo/<deriv>); the executor copies it into the cage,
+## and this hook bind-mounts it to /mnt-local-repo inside the chroot. So URIs are always
+## file:///mnt-local-repo/<deriv>. No container->host networking (a Qubes build qube blocks it).
 ##
 ## Trust: a local repo of freshly-built, unsigned packages uses "Trusted: yes" (apt skips
 ## signature verification for THIS repo only). Keep it confined to local testing; never ship it.
@@ -23,17 +24,18 @@
 ## Both blocks are commented out by default. Uncomment ONLY the block for the repository you are
 ## testing locally, so the other keeps pulling from the remote. (The build driver,
 ## dm-qubes-template-build --local-repo, writes these automatically for each derivative present
-## under the local repo base; this file is for manual use.)
+## under the local repo base and stages the matching repo tree at FLAVORS_DIR/aptrepo/<deriv>;
+## this file is for manual use -- by hand you must also place each repo tree there.)
 
 #kicksecure_repository_sources="Types: deb
-#URIs: http://172.17.0.1:8080/kicksecure
+#URIs: file:///mnt-local-repo/kicksecure
 #Suites: trixie
 #Components: main
 #Enabled: yes
 #Trusted: yes"
 
 #whonix_repository_sources="Types: deb
-#URIs: http://172.17.0.1:8080/whonix
+#URIs: file:///mnt-local-repo/whonix
 #Suites: trixie
 #Components: main
 #Enabled: yes

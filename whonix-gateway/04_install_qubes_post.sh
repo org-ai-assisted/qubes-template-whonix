@@ -92,6 +92,14 @@ env
 if [ -f "${FLAVORS_DIR}/local-repo.conf" ]; then
    # shellcheck disable=SC1091
    source "${FLAVORS_DIR}/local-repo.conf"
+   ## file:// URIs in local-repo.conf resolve INSIDE the template chroot, but the staged repo the
+   ## build driver drops next to this file lives in FLAVORS_DIR, OUTSIDE the chroot. Bind it in at
+   ## /mnt-local-repo so the chrooted apt can read it (mirrors installQubesRepo's bind). umount_all
+   ## (cleanup, below) unmounts it.
+   if [ -d "${FLAVORS_DIR}/aptrepo" ]; then
+      mkdir --parents -- "${INSTALL_DIR}/mnt-local-repo"
+      mount --bind "${FLAVORS_DIR}/aptrepo" "${INSTALL_DIR}/mnt-local-repo"
+   fi
 fi
 
 ## https://github.com/QubesOS/qubes-issues/issues/4957
@@ -225,5 +233,6 @@ rm --force -- "${target_dkms_suppress_mok_snippet}"
 
 ## Cleanup.
 umount_all "${INSTALL_DIR}/" || true
+rmdir -- "${INSTALL_DIR}/mnt-local-repo" 2>/dev/null || true
 trap - ERR EXIT
 trap
