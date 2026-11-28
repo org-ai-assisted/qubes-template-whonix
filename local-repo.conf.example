@@ -1,0 +1,43 @@
+## Local build-repo override for qubes-builderv2 / dm-qubes-template-build testing.
+##
+## Sourced by whonix-gateway/04_install_qubes_post.sh when present as "local-repo.conf" in the
+## template content dir (FLAVORS_DIR, alongside keys/). Lets a template build pull Whonix /
+## Kicksecure packages from a LOCAL apt repository instead of the remote testers repo -- for
+## testing a build against locally-built packages not yet uploaded anywhere.
+##
+## Only this .example is committed. The real local-repo.conf is NOT committed; the build driver
+## (dm-qubes-template-build --local-repo) writes it, or copy this file to local-repo.conf by hand.
+##
+## Transport (docker executor): the build's apt runs CHROOTED into the template rootfs, so a
+## file:// URI resolves inside the chroot, not against host or cage paths. The build driver stages
+## the repo next to this file (FLAVORS_DIR/aptrepo/<deriv>); the executor copies it into the cage,
+## and this hook bind-mounts it to /mnt-local-repo inside the chroot. So URIs are always
+## file:///mnt-local-repo/<deriv>. No container->host networking (a Qubes build qube blocks it).
+##
+## Trust: a local repo of freshly-built, unsigned packages uses "Trusted: yes" (apt skips
+## signature verification for THIS repo only). Keep it confined to local testing; never ship it.
+##
+## Suites / Components: must match the local repository's own codename and layout. derivative-
+## maker's local reprepro store under /srv/derivative-maker/aptrepo_local/<derivative> publishes
+## under the FIXED codename "local" (not a Debian suite like "trixie"), components
+## "main contrib non-free" -- same as dm's own add-local-test-repo.
+##
+## Both blocks are commented out by default. Uncomment ONLY the block for the repository you are
+## testing locally, so the other keeps pulling from the remote. (The build driver,
+## dm-qubes-template-build --local-repo, writes these automatically for each derivative present
+## under the local repo base and stages the matching repo tree at FLAVORS_DIR/aptrepo/<deriv>;
+## this file is for manual use -- by hand you must also place each repo tree there.)
+
+#kicksecure_repository_sources="Types: deb
+#URIs: file:///mnt-local-repo/kicksecure
+#Suites: local
+#Components: main contrib non-free
+#Enabled: yes
+#Trusted: yes"
+
+#whonix_repository_sources="Types: deb
+#URIs: file:///mnt-local-repo/whonix
+#Suites: local
+#Components: main contrib non-free
+#Enabled: yes
+#Trusted: yes"
