@@ -18,19 +18,23 @@
 ##
 ## Suites: must match the local repository's own codename (derivative-maker's local reprepro
 ## store under /srv/derivative-maker/aptrepo_local/<derivative> uses the plain release codename,
-## e.g. "trixie", not "trixie-testers"). Override only the repo you are actually testing; leave
-## the other commented to keep pulling from the remote.
+## e.g. "trixie", not "trixie-testers").
+##
+## Both blocks are commented out by default. Uncomment ONLY the block for the repository you are
+## testing locally, so the other keeps pulling from the remote. (The build driver,
+## dm-qubes-template-build --local-repo, writes these automatically for each derivative present
+## under the local repo base; this file is for manual use.)
 
-kicksecure_repository_sources="Types: deb
-URIs: http://172.17.0.1:8080/kicksecure
-Suites: trixie
-Components: main
-Enabled: yes
-Trusted: yes"
+#kicksecure_repository_sources="Types: deb
+#URIs: http://172.17.0.1:8080/kicksecure
+#Suites: trixie
+#Components: main
+#Enabled: yes
+#Trusted: yes"
 
-whonix_repository_sources="Types: deb
-URIs: http://172.17.0.1:8080/whonix
-Suites: trixie
-Components: main
-Enabled: yes
-Trusted: yes"
+#whonix_repository_sources="Types: deb
+#URIs: http://172.17.0.1:8080/whonix
+#Suites: trixie
+#Components: main
+#Enabled: yes
+#Trusted: yes"
