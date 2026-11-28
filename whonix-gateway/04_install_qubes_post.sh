@@ -84,9 +84,19 @@ installQubesRepo
 ## Debugging.
 env
 
+## Local build-repo override: test a template build against locally-built packages that are
+## not yet uploaded to a remote repository. The build driver drops this file into the fetched
+## template content (FLAVORS_DIR); it is absent in a normal build. It may set any repository_*
+## variable below -- typically kicksecure_repository_sources / whonix_repository_sources to a
+## local apt repo stanza carrying 'Trusted: yes'. See local-repo.conf.example.
+if [ -f "${FLAVORS_DIR}/local-repo.conf" ]; then
+   # shellcheck disable=SC1091
+   source "${FLAVORS_DIR}/local-repo.conf"
+fi
+
 ## https://github.com/QubesOS/qubes-issues/issues/4957
 #[ -n "$whonix_repository_uri" ] || whonix_repository_uri="tor+http://deb.dds6qkxpwdeubwucdiaord2xgbbeyds25rbsgr73tbfpqpt4a6vjwsyd.onion"
-[ -n "$whonix_repository_uri" ] || kicksecure_repository_uri="https://deb.kicksecure.com"
+[ -n "$kicksecure_repository_uri" ] || kicksecure_repository_uri="https://deb.kicksecure.com"
 [ -n "$whonix_repository_uri" ] || whonix_repository_uri="https://deb.whonix.org"
 
 [ -n "$kicksecure_repository_suite" ] || kicksecure_repository_suite="trixie-testers"

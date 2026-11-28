@@ -1,0 +1,36 @@
+## Local build-repo override for qubes-builderv2 / dm-qubes-template-build testing.
+##
+## Sourced by whonix-gateway/04_install_qubes_post.sh when present as "local-repo.conf" in the
+## template content dir (FLAVORS_DIR, alongside keys/). Lets a template build pull Whonix /
+## Kicksecure packages from a LOCAL apt repository instead of the remote testers repo -- for
+## testing a build against locally-built packages not yet uploaded anywhere.
+##
+## Only this .example is committed. The real local-repo.conf is NOT committed; the build driver
+## (dm-qubes-template-build --local-repo) writes it, or copy this file to local-repo.conf by hand.
+##
+## Reachability (docker executor): the build runs in a container on the default docker bridge,
+## which reaches the host only at the bridge gateway 172.17.0.1 -- NOT 127.0.0.1 -- and host
+## paths are not bind-mounted into the cage, so a "file:" URI does not work under docker. Serve
+## the local repo over http on the host (bound to 172.17.0.1) and point URIs at it.
+##
+## Trust: a local repo of freshly-built, unsigned packages uses "Trusted: yes" (apt skips
+## signature verification for THIS repo only). Keep it confined to local testing; never ship it.
+##
+## Suites: must match the local repository's own codename (derivative-maker's local reprepro
+## store under /srv/derivative-maker/aptrepo_local/<derivative> uses the plain release codename,
+## e.g. "trixie", not "trixie-testers"). Override only the repo you are actually testing; leave
+## the other commented to keep pulling from the remote.
+
+kicksecure_repository_sources="Types: deb
+URIs: http://172.17.0.1:8080/kicksecure
+Suites: trixie
+Components: main
+Enabled: yes
+Trusted: yes"
+
+whonix_repository_sources="Types: deb
+URIs: http://172.17.0.1:8080/whonix
+Suites: trixie
+Components: main
+Enabled: yes
+Trusted: yes"
